@@ -9,6 +9,7 @@ last updated on Sat Apt 22,2023 12:39 PM MDT
 import numpy as np
 import scipy.special as sc
 import pandas as pd
+import matplotlib.pyplot as plt
 
 
 class probability_calibration():
@@ -180,3 +181,59 @@ class probability_calibration():
             p_out.append(np.sum(po*score)/np.sum(score))
 
         return p_out
+
+
+def reliability_diagram(pred, gt):
+    n = 10
+    be = np.linspace(0, n, n+1)*(1/n)
+    num = n+1
+    be[n] = 1.01
+    xx = 0.5*(be[:num-1]+be[1:])
+
+    m10 = np.array(pred)
+    hist, _ = np.histogram(m10, bins=be)
+    print(hist)
+    mm1 = []
+    for i in range(num-1):
+        s = np.sum(gt*(m10 >= be[i]) * (m10 < be[i+1]))
+        mm1.append(s)
+
+    ind = np.where(hist > 0)
+    mm1 = mm1/hist
+    mm1 = np.asarray(mm1)
+
+    return xx[ind], mm1[ind]
+
+
+def main():
+    ngen = 1000
+    s = np.random.normal(0.5, 0.2, ngen)
+
+    s[s < 0] = 0
+    s[s > 1] = 1
+
+    gt_p = list(s > 0.5)[:ngen//2]
+    gt_i = list(s > 0.5)[ngen//2:]
+    pred = list(s)[:ngen//2]
+    infer = list(s)[ngen//2:]
+
+    p = probability_calibration(pred, gt_p, infer)
+    cal = p.calibrateProbability(n_sel=10)
+
+    idx = np.argsort(infer)
+
+    p1, freq1 = reliability_diagram(infer, gt_i)
+    p2, freq2 = reliability_diagram(cal, gt_i)
+    plt.subplot(1, 3, 1)
+    plt.plot(p1, freq1)
+    plt.plot([0, 1], [0, 1], '-r')
+    plt.subplot(1, 3, 2)
+    plt.plot(np.array(infer)[idx], np.array(cal)[idx])
+    plt.subplot(1, 3, 3)
+    plt.plot(p2, freq2)
+    plt.plot([0, 1], [0, 1], '-r')
+    plt.show()
+
+
+if __name__ == '__main__':
+    main()
