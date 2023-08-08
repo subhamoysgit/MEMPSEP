@@ -1,0 +1,17 @@
+name: mempsep
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+ - astropy
+ - matplotlib
+ - numpy
+ - opencv
+ - pip
+ - python
+ - reproject
+ - scikit-image
+ - scipy
+ - sunpy
+ - tensorflow=2.6
+ - tensorflow-gpu=2.6
