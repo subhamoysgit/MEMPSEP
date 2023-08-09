@@ -184,6 +184,20 @@ class probability_calibration():
 
 
 def reliability_diagram(pred, gt):
+    '''
+    Parameters:
+        pred (float):
+            list of NN outcomes to fit the calibrator on
+
+        gt (int):
+            list of ground truths corresponding to pred data
+
+    returns:
+        probability (xx) and frequency list (mm1) for all the bins
+        ece (float): expected calibration error
+
+
+    '''
     n = 10
     be = np.linspace(0, n, n+1)*(1/n)
     num = n+1
@@ -192,17 +206,20 @@ def reliability_diagram(pred, gt):
 
     m10 = np.array(pred)
     hist, _ = np.histogram(m10, bins=be)
-    print(hist)
-    mm1 = []
+    mm1, p_avg = [], []
     for i in range(num-1):
         s = np.sum(gt*(m10 >= be[i]) * (m10 < be[i+1]))
+        s1 = np.sum((m10 >= be[i]) * (m10 < be[i+1]) * (m10))/hist[i]
         mm1.append(s)
+        p_avg.append(s1)
 
     ind = np.where(hist > 0)
     mm1 = mm1/hist
     mm1 = np.asarray(mm1)
+    p_avg = np.asarray(p_avg)
+    ece = np.sum(np.abs(mm1[ind]-p_avg[ind])*hist[ind]/len(gt))
 
-    return xx[ind], mm1[ind]
+    return xx[ind], mm1[ind], ece
 
 
 def main():
@@ -222,8 +239,8 @@ def main():
 
     idx = np.argsort(infer)
 
-    p1, freq1 = reliability_diagram(infer, gt_i)
-    p2, freq2 = reliability_diagram(cal, gt_i)
+    p1, freq1, ece1 = reliability_diagram(infer, gt_i)
+    p2, freq2, ece2 = reliability_diagram(cal, gt_i)
     plt.subplot(1, 3, 1)
     plt.plot(p1, freq1)
     plt.plot([0, 1], [0, 1], '-r')
@@ -233,6 +250,8 @@ def main():
     plt.plot(p2, freq2)
     plt.plot([0, 1], [0, 1], '-r')
     plt.show()
+    print(f'ECE before calibration {np.round(ece1, 4)*100} %')
+    print(f'ECE after calibration {np.round(ece2, 4)*100} %')
 
 
 if __name__ == '__main__':
