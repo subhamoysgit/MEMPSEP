@@ -106,7 +106,7 @@ def main():
 
     etype0 = list(df_o['event_type'] == 0)
     etype1 = list(df_o['event_type'] == 1)
-
+    # fill missing data
     for col in insitu_cols:
         ind = np.logical_and(list(df_o[col] == -9999), etype0)
         ind_c = np.logical_and(list(df_o[col] != -9999), etype0)
@@ -119,7 +119,7 @@ def main():
         df_o.loc[ind, col] = df_o[col][ind_c].sample(np.sum(ind),
                                                      replace=True,
                                                      random_state=239).values
-
+    # normalize
     scale = MinMaxScaler()
     for col in insitu_cols:
         if col in ['IMF Bx', 'IMF By', 'IMF Bz']:
