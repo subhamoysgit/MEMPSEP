@@ -9,7 +9,7 @@ from classification_model import MEMPSEP_C
 MODEL_DIR = '/d1/sep_data/models/'
 NAME = 'MUFWXE'
 def MEMPSEP_R(sz=256,
-              ensemble='1'):
+              ensemble=0):
     '''
     Archiecture of MEMPSEP
     @author: Subhamoy Chatterjee
@@ -104,7 +104,8 @@ def MEMPSEP_R(sz=256,
     
     #load pretrained classification model
     model_c = MEMPSEP_C(sz=sz)
-    model_c.load_weights(MODEL_DIR+'2_class_'+NAME+'_model_ensemble_'+ensemble.zfill(2)+'.h5')
+    model_c.load_weights(MODEL_DIR+'2_class_'+NAME+'_model_ensemble_'
+                         +str(ensemble + 1).zfill(2)+'.h5')
     model_layers = model_c.layers
     for i in range(len(model_layers)):
         model_layers[i].trainable = False

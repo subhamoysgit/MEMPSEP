@@ -31,15 +31,15 @@ def main():
         ensemble = str(n+1)
         trn_list, val_list = trn_val_split(n+1)
         model = MEMPSEP_R(sd=256,
-                        ensemble=ensemble)
+                        ensemble=n)
         sgd = tf.keras.optimizers.SGD(lr=0.0005, momentum=0.9, nesterov=True)
         model.compile(loss =my_loss,  optimizer = sgd, metrics =[my_loss],run_eagerly = True)
         checkpoint = ModelCheckpoint(MODEL_DIR+'gated_regression_' + MODEL_NAME +
                                     '_model_ensemble_' + ensemble.zfill(2)+'.h5',
-                                    monitor='val_accuracy', verbose=1,
+                                    monitor='val_loss', verbose=1,
                                     save_best_only=True, save_weights_only=True,
                                     mode='auto', period=1)
-        early_stopping = EarlyStopping(monitor='val_accuracy', min_delta=0,
+        early_stopping = EarlyStopping(monitor='val_loss', min_delta=0,
                                     patience=5, verbose=1, mode='auto')
         history = model.fit(dataLoader_r(trn_list, BATCH_SIZE, INPUT_DICT),
                             steps_per_epoch=len(trn_list)/BATCH_SIZE, epochs=100,
