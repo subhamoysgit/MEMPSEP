@@ -4,7 +4,7 @@ from keras.layers import Input, Conv2D, BatchNormalization, Activation,\
     concatenate, Dropout, Dense
 
 
-def MEMPSEP(sz=256):
+def MEMPSEP_C(sz=256):
     '''
     Archiecture of MEMPSEP
     @author: Subhamoy Chatterjee
