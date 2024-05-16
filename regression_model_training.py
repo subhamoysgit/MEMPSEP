@@ -5,7 +5,7 @@ Traning MEMPSEP
 import numpy as np
 import pickle
 from dataloader import trn_val_split, dataLoader, dataLoader_r
-from classification_model import MEMPSEP_R
+from regression_model import MEMPSEP_R
 import tensorflow as tf
 from keras.callbacks import ModelCheckpoint, EarlyStopping
 import keras.backend as K
@@ -30,7 +30,7 @@ def main():
     for n in range(10):
         ensemble = str(n+1)
         trn_list, val_list = trn_val_split(n+1)
-        model = MEMPSEP_R(sd=256,
+        model = MEMPSEP_R(sz=256,
                         ensemble=n)
         sgd = tf.keras.optimizers.SGD(lr=0.0005, momentum=0.9, nesterov=True)
         model.compile(loss =my_loss,  optimizer = sgd, metrics =[my_loss],run_eagerly = True)
