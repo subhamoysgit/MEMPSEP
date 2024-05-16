@@ -1,7 +1,7 @@
 from keras.models import Model
 from keras.layers import Input, Conv2D, BatchNormalization, Activation,\
     MaxPooling2D, ZeroPadding2D, Flatten, GlobalMaxPooling2D,\
-    concatenate, Dropout, Dense
+    concatenate, Dropout, Dense, Lambda
     
 import pickle
 from probability_calibration import probability_calibration
@@ -110,19 +110,6 @@ def MEMPSEP_R(sz=256,
     for i in range(len(model_layers)):
         model_layers[i].trainable = False
     out_c = model_c([mag, win, upstr, xray_l1, elec_l1])
-    
-    #convert classification model outcome to probability
-    ens = pickle.load(open(MODEL_DIR + "model_ensemble_on_trn_ens_"
-                           + NAME + "_" + str(ensemble + 1).zfill(2)
-                           + ".p", "rb"))
-    gt_t = []
-    p_t = []
-    for i in range(len(ens)):
-        p_t.append(ens[i][3 + ensemble])
-        gt_t.append(float(int(ens[i][2]) == 1))
-
-    p_cal = probability_calibration(p_t, gt_t, [out_c[0][0]])
-    out_c = p_cal.calibrateProbability(n_sel=20)
     
     # final output as concatenation of sep probability and properties 
     out = concatenate([out_c, out_r])
