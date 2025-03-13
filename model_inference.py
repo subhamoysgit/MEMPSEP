@@ -78,6 +78,7 @@ def infer(model, identifier, input_dict, pn, df_INSITU, dw, ds, de, calibrate = 
     for nn in range(10):
         model.load_weights(MODEL_DIR + '2_class_' + MNAME + '_model_ensemble_'
                     + str(nn+1).zfill(2) + '.h5')
+        
         p = model.predict([X1, X2, X5, X6, X7])
 
         if calibrate == True:
